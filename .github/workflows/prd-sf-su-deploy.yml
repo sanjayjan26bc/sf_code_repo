@@ -1,4 +1,4 @@
-name: sf-su-deploy-actions
+name: prd-sf-su-deploy
 
 on:
   push:
