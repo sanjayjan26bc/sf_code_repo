@@ -1,4 +1,4 @@
-name: sf-su-qa-actions
+name: sf-su-deploy-actions
 
 on:
   push:
