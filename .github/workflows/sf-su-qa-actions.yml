@@ -1,0 +1,81 @@
+name: sf-su-qa-actions
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - prd
+    paths:
+      - '**.sql'
+      - '**.yml'
+      - '**.yaml'
+      - '**.py'
+      - '**.sh'
+      - '**/schemachange-config.json'
+      - '.github/workflows/**'
+      
+  workflow_dispatch:
+
+jobs:
+  deploy-snowflake-changes-job:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Python 3.8.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Set environment-specific variables
+        run: |
+          echo "Branch Name: ${{ github.ref_name }}"
+          
+          # These are ENVIRONMENT VARIABLES, auto available since you defined them in the environment
+          echo "SF_DATABASE_RAW=${{ vars.SF_DATABASE_RAW }}" >> $GITHUB_ENV
+          echo "SF_DATABASE_INT=${{ vars.SF_DATABASE_INT }}" >> $GITHUB_ENV
+          echo "SF_DATABASE_RPT=${{ vars.SF_DATABASE_RPT }}" >> $GITHUB_ENV
+          echo "SF_SCHEMA_SALESFORCE=${{ vars.SF_SCHEMA_SALESFORCE }}" >> $GITHUB_ENV
+          echo "SF_SCHEMA_PDR_MAIN=${{ vars.SF_SCHEMA_PDR_MAIN }}" >> $GITHUB_ENV
+
+      - name: Run schemachange
+        env:
+          SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
+          SF_DATABASE: ${{ secrets.SF_DATABASE }}
+          SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
+          SF_ROLE: ${{ secrets.SF_ROLE }}
+          SF_DATABASE_RAW: ${{ vars.SF_DATABASE_RAW }}
+          SF_DATABASE_INT: ${{ vars.SF_DATABASE_INT }}
+          SF_DATABASE_RPT: ${{ vars.SF_DATABASE_RPT }}
+          SF_SCHEMA_SALESFORCE: ${{ vars.SF_SCHEMA_SALESFORCE }}
+          SF_SCHEMA_PDR_MAIN: ${{ vars.SF_SCHEMA_PDR_MAIN }}
+        run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Branch Name: ${{ github.ref_name }}"
+          python --version
+          pip install --upgrade pip
+          echo "Installing schemachange..."
+          pip install schemachange
+
+          echo "Running schemachange..."
+          schemachange -f "$GITHUB_WORKSPACE" \
+            -a "$SF_ACCOUNT" \
+            -u "$SF_USERNAME" \
+            -r "$SF_ROLE" \
+            -w "$SF_WAREHOUSE" \
+            -d "$SF_DATABASE" \
+            -c "$SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY" \
+            --vars "{\"env_vars\": {
+              \"SF_DATABASE_RAW\": \"$SF_DATABASE_RAW\",
+              \"SF_DATABASE_INT\": \"$SF_DATABASE_INT\",
+              \"SF_DATABASE_RPT\": \"$SF_DATABASE_RPT\",
+              \"SF_SCHEMA_SALESFORCE\": \"$SF_SCHEMA_SALESFORCE\",
+              \"SF_SCHEMA_PDR_MAIN\": \"$SF_SCHEMA_PDR_MAIN\"
+            }}" \
+            --create-change-history-table
