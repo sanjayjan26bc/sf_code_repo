@@ -48,6 +48,7 @@ jobs:
           SF_SCHEMA_PDR_MAIN: ${{ vars.SF_SCHEMA_PDR_MAIN }}
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Branch Name: ${{ github.ref_name }}"
           python --version
           pip install --upgrade pip
           echo "Installing schemachange..."
