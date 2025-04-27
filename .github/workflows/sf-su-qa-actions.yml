@@ -6,6 +6,15 @@ on:
       - dev
       - qa
       - prd
+    paths:
+      - '**.sql'
+      - '**.yml'
+      - '**.yaml'
+      - '**.py'
+      - '**.sh'
+      - '**/schemachange-config.json'
+      - '.github/workflows/**'
+      
   workflow_dispatch:
 
 jobs:
