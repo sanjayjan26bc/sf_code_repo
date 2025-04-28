@@ -58,6 +58,7 @@ jobs:
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "Branch Name: ${{ github.ref_name }}"
+          echo "Database Name: ${{ secrets.SF_DATABASE }}"
           python --version
           pip install --upgrade pip
           echo "Installing schemachange..."
