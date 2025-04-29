@@ -40,7 +40,7 @@ jobs:
           echo "SF_SCHEMA_SALESFORCE=${{ vars.SF_SCHEMA_SALESFORCE }}" >> $GITHUB_ENV
           echo "SF_SCHEMA_PDR_MAIN=${{ vars.SF_SCHEMA_PDR_MAIN }}" >> $GITHUB_ENV
 
-            - name: Run schemachange
+      - name: Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USERNAME }}
@@ -53,18 +53,17 @@ jobs:
           SF_DATABASE_RPT: ${{ vars.SF_DATABASE_RPT }}
           SF_SCHEMA_SALESFORCE: ${{ vars.SF_SCHEMA_SALESFORCE }}
           SF_SCHEMA_PDR_MAIN: ${{ vars.SF_SCHEMA_PDR_MAIN }}
-          
-          run: |
+        run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "Branch Name: ${{ github.ref_name }}"
           echo "Database Name: ${{ secrets.SF_DATABASE }}"
-            python --version
-            pip install --upgrade pip
-            echo "Installing schemachange..."
-            pip install schemachange
+          python --version
+          pip install --upgrade pip
+          echo "Installing schemachange..."
+          pip install schemachange
 
-            echo "Running schemachange..."
-            schemachange -f "$GITHUB_WORKSPACE" \
+          echo "Running schemachange..."
+          schemachange -f "$GITHUB_WORKSPACE" \
             -a "$SF_ACCOUNT" \
             -u "$SF_USERNAME" \
             -r "$SF_ROLE" \
