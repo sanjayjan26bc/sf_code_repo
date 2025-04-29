@@ -78,4 +78,4 @@ jobs:
               \"SF_SCHEMA_PDR_MAIN\": \"$SF_SCHEMA_PDR_MAIN\"
             }}" \
             --create-change-history-table \
-            --query-tag-script "ALTER SESSION SET QUERY_TAG = 'schemachange: {script_name}'"
+            --query-tag: 'QUERY_TAG'"
