@@ -1,11 +1,9 @@
-name: qa-sf-su-deploy.
+name: qa-sf-su-deploy
 
 on:
   push:
     branches:
-      - dev
       - qa
-      - prd
     paths:
       - '**.sql'
       - '**.yml'
@@ -58,6 +56,7 @@ jobs:
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "Branch Name: ${{ github.ref_name }}"
+          echo "Database Name: ${{ secrets.SF_DATABASE }}"
           python --version
           pip install --upgrade pip
           echo "Installing schemachange..."
@@ -78,4 +77,5 @@ jobs:
               \"SF_SCHEMA_SALESFORCE\": \"$SF_SCHEMA_SALESFORCE\",
               \"SF_SCHEMA_PDR_MAIN\": \"$SF_SCHEMA_PDR_MAIN\"
             }}" \
-            --create-change-history-table
+            --create-change-history-table \
+            --query-tag "{script_name}"
